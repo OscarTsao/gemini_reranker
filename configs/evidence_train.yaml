@@ -1,0 +1,15 @@
+training:
+  model_name_or_path: bert-base-uncased
+  output_dir: data/models/evidence_run
+  epochs: 1
+  batch_size: 4
+  grad_accum_steps: 1
+  max_length: 384
+  seed: 42
+  mixed_precision: bf16
+  margin: 0.3
+  mlflow_run_name: evidence-span-demo
+data:
+  pairwise_path: data/pairs/evidence_train.jsonl
+  dev_path: data/pairs/evidence_dev.jsonl
+  test_path: data/pairs/evidence_test.jsonl

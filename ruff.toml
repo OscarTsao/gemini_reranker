@@ -1,0 +1,81 @@
+# Ruff configuration for criteria-bind project
+# https://docs.astral.sh/ruff/
+
+line-length = 100
+target-version = "py310"
+
+[lint]
+# Enable comprehensive rule sets
+select = [
+    "E",    # pycodestyle errors
+    "F",    # pyflakes
+    "W",    # pycodestyle warnings
+    "I",    # isort
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "ANN",  # flake8-annotations
+    "S",    # flake8-bandit
+    "B",    # flake8-bugbear
+    "A",    # flake8-builtins
+    "COM",  # flake8-commas
+    "C4",   # flake8-comprehensions
+    "DTZ",  # flake8-datetimez
+    "ISC",  # flake8-implicit-str-concat
+    "ICN",  # flake8-import-conventions
+    "PIE",  # flake8-pie
+    "PT",   # flake8-pytest-style
+    "RSE",  # flake8-raise
+    "RET",  # flake8-return
+    "SIM",  # flake8-simplify
+    "ARG",  # flake8-unused-arguments
+    "PTH",  # flake8-use-pathlib
+    "PD",   # pandas-vet
+    "PL",   # pylint
+    "TRY",  # tryceratops
+    "NPY",  # numpy-specific rules
+    "RUF",  # ruff-specific rules
+]
+
+ignore = [
+    "ANN101",  # Missing type annotation for self in method
+    "ANN102",  # Missing type annotation for cls in classmethod
+    "ANN401",  # Dynamically typed expressions (Any) are disallowed
+    "S101",    # Use of assert detected (needed for tests)
+    "PLR0913", # Too many arguments to function call
+    "PLR2004", # Magic value used in comparison
+    "COM812",  # Missing trailing comma (conflicts with formatter)
+    "ISC001",  # Implicit string concatenation (conflicts with formatter)
+]
+
+# Per-file ignores
+[lint.per-file-ignores]
+"tests/**/*.py" = [
+    "S101",    # Allow assert in tests
+    "ANN",     # Don't require type hints in tests
+    "ARG",     # Allow unused arguments in test fixtures
+    "PLR2004", # Allow magic values in tests
+    "S105",    # Allow hardcoded passwords in tests
+    "S106",    # Allow hardcoded passwords in tests
+]
+"scripts/**/*.py" = [
+    "T201",    # Allow print statements in scripts
+    "S603",    # Allow subprocess calls in scripts
+    "S607",    # Allow partial executable paths
+]
+"**/__init__.py" = [
+    "F401",    # Allow unused imports in __init__.py
+]
+
+[lint.isort]
+known-first-party = ["criteriabind"]
+force-single-line = false
+lines-after-imports = 2
+
+[lint.pydocstyle]
+convention = "google"
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

@@ -1,0 +1,40 @@
+# Gemini Judge Configuration
+# Settings for running Gemini API judging on candidate snippets
+
+judge:
+  # Gemini model to use for judging
+  model: "gemini-2.5-flash"
+
+  # Response format
+  response_mime: "application/json"
+
+  # Rubric version identifier
+  rubric_version: "clinical_rubric_v1"
+
+  # Safety threshold settings
+  # Options: BLOCK_NONE, BLOCK_LOW_AND_ABOVE, BLOCK_MEDIUM_AND_ABOVE, BLOCK_HIGH_AND_ABOVE
+  safety:
+    hate_speech: "BLOCK_MEDIUM_AND_ABOVE"
+    harassment: "BLOCK_MEDIUM_AND_ABOVE"
+    sexual: "BLOCK_MEDIUM_AND_ABOVE"
+    danger: "BLOCK_MEDIUM_AND_ABOVE"
+
+  # Maximum number of candidates to judge together
+  max_group_size: 5
+
+  # Retry configuration
+  retries: 3
+  backoff_seconds: 2.0
+
+  # Enable two-pass judging for consistency
+  enable_two_pass: true
+
+  # Drop items where two passes disagree
+  drop_on_conflict: true
+
+data:
+  # Input judging jobs
+  judging_jobs_path: "data/proc/judging_jobs.jsonl"
+
+  # Output judged items
+  judged_path: "data/judged/train.jsonl"

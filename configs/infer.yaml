@@ -1,0 +1,31 @@
+# Inference Configuration
+# Settings for running inference on new clinical notes
+
+inference:
+  # Model checkpoints
+  criteria_model: "data/models/criteria_ranker/checkpoint-best"
+  evidence_model: "data/models/evidence_span/checkpoint-best"
+
+  # Base model architecture
+  base_model: "microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract"
+
+  # Generation parameters
+  max_length: 512
+  batch_size: 8
+
+  # Candidate generation
+  k_candidates: 8
+
+  # Device settings
+  device: "cuda"  # or "cpu"
+  mixed_precision: "bf16"  # "no", "fp16", or "bf16"
+
+data:
+  # Input notes to process
+  notes_path: "data/raw/test.jsonl"
+
+  # Output predictions
+  output_path: "data/proc/infer.jsonl"
+
+# Optional: threshold for filtering low-confidence predictions
+confidence_threshold: 0.5

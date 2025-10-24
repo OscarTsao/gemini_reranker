@@ -1,0 +1,30 @@
+# Candidate Generation Configuration
+# Settings for extracting candidate snippets from clinical notes
+
+candidate_gen:
+  # Number of top candidates to extract per criterion
+  k: 8
+
+  # Sentence tokenization settings
+  min_sentence_length: 10  # Minimum characters
+  max_sentence_length: 300  # Maximum characters
+
+  # Scoring method for ranking candidates
+  # Options: "keyword_overlap", "sentence_length", "position_bias"
+  scoring_method: "keyword_overlap"
+
+  # Context window for candidates (sentences before/after)
+  context_window: 0
+
+  # Deduplication threshold (Jaccard similarity)
+  dedup_threshold: 0.8
+
+data:
+  # Input clinical notes with criteria
+  raw_path: "data/raw/train.jsonl"
+
+  # Output judging jobs
+  judging_jobs_path: "data/proc/judging_jobs.jsonl"
+
+# Reproducibility
+seed: 42

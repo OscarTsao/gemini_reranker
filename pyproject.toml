@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "criteria-bind"
+version = "0.1.0"
+description = "Refine SFT-tuned BERT-like models for DSM criteria matching and evidence binding with Gemini judging."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+  {name = "Criteria Bind Team", email = "opensource@example.com"}
+]
+dependencies = [
+  "torch>=2.2",
+  "transformers>=4.43",
+  "datasets",
+  "accelerate",
+  "peft",
+  "evaluate",
+  "scikit-learn",
+  "numpy",
+  "pydantic>=2",
+  "mlflow",
+  "rich",
+  "tyro",
+  "ujson",
+  "regex",
+  "pyyaml",
+  "sentencepiece",
+  "nltk",
+  "google-genai",
+  "tenacity",
+  "tqdm",
+  "fastapi",
+  "uvicorn",
+  "pyarrow",
+  "python-dotenv"
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "ruff",
+  "mypy",
+  "bandit[toml]"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.mypy]
+python_version = "3.10"
+warn_unused_configs = true
