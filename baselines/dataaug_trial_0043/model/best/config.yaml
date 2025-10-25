@@ -1,0 +1,95 @@
+dataset:
+  name: original_hybrid
+  include_original: true
+  use_augmented:
+  - hybrid
+  ground_truth_path: Data/GroundTruth/Final_Ground_Truth.json
+  augmented_sources:
+    nlpaug: Data/Augmentation/nlpaug_dataset_*.csv
+    textattack: Data/Augmentation/textattack_dataset_*.csv
+    hybrid: Data/Augmentation/hybrid_dataset_*.csv
+  splits:
+    train: 0.7
+    val: 0.15
+    test: 0.15
+  shuffle_seed: 42
+  max_examples: null
+model:
+  pretrained_model_name: microsoft/deberta-base
+  classifier_hidden_sizes:
+  - 448
+  - 256
+  classifier_dropout: 0.21495447160923437
+  max_seq_length: 384
+  warmup_ratio: 0.010807685068278328
+  learning_rate: 2.7835311559047116e-05
+  weight_decay: 0.011876220358933333
+  optimizer: adamw_hf
+  scheduler: linear
+  adam_eps: 9.692253480596113e-09
+  max_grad_norm: 2.137977796123785
+  batch_size: 8
+  gradient_accumulation_steps: 1
+  num_epochs: 100
+  compile_model: false
+  use_bfloat16: false
+  use_gradient_checkpointing: true
+  eval_batch_size: 12
+training_mode:
+  training_mode: gpu_workstation
+  dataloader:
+    num_workers: 24
+    pin_memory: true
+    persistent_workers: true
+    prefetch_factor: 4
+  notes: GPU workstation profile (RTX 5090)
+seed: 4029
+output_dir: outputs/train/optuna/trial_0043
+log_dir: logs
+resume: false
+save_total_limit: 1
+metric_for_best_model: roc_auc
+regression_threshold: 0.5
+dataloader:
+  num_workers: 18
+  pin_memory: true
+  persistent_workers: true
+  prefetch_factor: 8
+metrics:
+- accuracy
+- precision
+- recall
+- f1
+- roc_auc
+logging:
+  wandb:
+    enabled: false
+    project: redsm5-classification
+    entity: null
+    group: null
+    tags: []
+    mode: null
+    run_name: null
+mlflow:
+  enabled: true
+  tracking_uri: sqlite:///mlflow.db
+  fallback_tracking_uri: mlruns
+  experiments:
+    training: redsm5-classification
+    optuna: redsm5-optuna
+    criteria_optuna: redsm5-optuna-criteria
+    joint_optuna: redsm5-optuna-joint
+scheduler_kwargs: {}
+notes: ''
+n_trials: 500
+timeout: null
+optuna:
+  n_trials: 500
+  timeout: null
+  study_name: default_hpo
+  storage: null
+  direction: maximize
+evaluation:
+  checkpoint: null
+  output_path: test_metrics.json
+  split: test

@@ -1,0 +1,133 @@
+pattern	alternatives
+\bno\s+interest\b	no motivation|loss of interest|not interested|lack of interest|anhedonia
+\bloss of interest\b	loss of pleasure|anhedonia|not enjoying things|no longer interested
+\bfeel(s|ing)?\s+sad\b	feels down|feels blue|feels low|feels depressed
+\bdepressed\b	down|blue|low|in a slump
+\banxiety\b	nervousness|unease|restlessness|feeling on edge
+\binsomnia\b	trouble sleeping|difficulty sleeping|sleep problems|can't sleep
+\bcan('?|no)t\s+sleep\b	insomnia|unable to sleep|can't fall asleep
+\boversleep(ing)?\b	sleeping too much|excessive sleep|hypersomnia
+\bfatigue\b	tiredness|exhaustion|low energy|weariness
+\bguilt(y)?\b	self-blame|feeling guilty|remorse
+\bcry(ing|ies)?\b	tearful|in tears|crying spells
+\bworthless(ness)?\b	feeling worthless|low self-worth|feeling like a burden|like I don't matter
+\bhopeless(ness)?\b	without hope|like nothing will change|feeling hopeless
+\bhelpless(ness)?\b	powerless|without control|unable to cope
+\bsuicidal\b	thoughts of self-harm|thinking about death|suicide ideation
+\bI\s+don't\s+want\s+to\s+live\b	I do not want to live|I struggle to want to live|I don't want to keep living
+\bI\s+don't\s+want\s+to\s+be\s+alive\b	I do not want to be alive|I can't stand being alive|being alive feels unbearable
+\bI\s+want\s+to\s+die\b	I feel like dying|I wish I could die|I want death to come
+\bappetite\s+loss\b	poor appetite|eating less|reduced appetite
+\bno\s+appetite\b	zero appetite|can't eat|no desire to eat
+\bbinge\s+eating\b	overeating episodes|eating binges|loss of control eating
+\bI\s+feel\s+worthless\b	I feel utterly worthless|I feel like I'm nothing|I feel completely worthless
+\bI\s+feel\s+hopeless\b	I feel utterly hopeless|I feel like nothing will improve|I feel completely hopeless
+\bI\s+feel\s+helpless\b	I feel powerless|I feel unable to cope|I feel completely helpless
+\bI\s+feel\b	I truly feel|I deeply feel|I honestly feel
+\bI\s+am\b	I am really|I am truly|I am genuinely
+\bI'm\b	I'm really|I'm truly|I'm genuinely
+\bcan't\b	cannot|unable to|just can't
+\bcannot\b	can't|unable to|not able to
+\bcouldn't\b	could not|wasn't able to|could never
+\bdon'?t\b	do not|never|simply do not
+\bwon'?t\b	will not|refuse to|just won't
+\bnever\b	hardly ever|at no point|not once
+\balways\b	constantly|all the time|without stopping
+\bnobody\b	no one|not a single person|nobody at all
+\bno\s+one\b	nobody|not a single person|no person
+\bno\s+friends\b	no close friends|nobody I can call a friend|no real friends
+\blonely\b	isolated|on my own|all alone
+\brestless(ness)?\b	agitation|can't sit still|fidgety|unceasing restlessness
+\bslow(ed)?\s+movements?\b	psychomotor slowing|moving slowly|sluggish movements|dragging my movements
+\birritable\b	short-tempered|easily annoyed|irritability
+\bconcentration\s+problems\b	trouble focusing|difficulty concentrating|can't concentrate|focus issues
+\bno\s+energy\b	zero energy|no strength|totally drained
+\blow\s+energy\b	low vitality|running on empty|barely any energy
+\btired\b	exhausted|worn out|drained
+\bso\s+tired\b	completely exhausted|utterly worn out|beyond tired
+\bexhausted\b	drained|wiped out|utterly spent
+\bstressed\b	overwhelmed|under unbearable stress|on edge
+\bpanicking\b	spiraling|in a panic|freaking out
+\bpanic\s+attack(s)?\b	panic episode(s)|sudden panic|acute anxiety episode(s)
+\banhedonia\b	loss of pleasure|no enjoyment|unable to enjoy anything
+\bcan't\s+focus\b	unable to focus|can't concentrate|focus is gone
+\bfocus\b	concentration|attention|mental focus
+\bI\s+hate\s+myself\b	I absolutely hate myself|I loathe myself|I despise myself
+\bIm\b	I'm really|I'm truly|I'm genuinely
+\bI'd\s+rather\b	I would rather|I'd much rather|I'd sooner
+\bI\s+really\s+just\s+want\s+to\s+die\b	I truly just want to die|I desperately want to die|I really want to die
+\bI\s+lose\s+my\s+appetite\b	I lose all appetite|My appetite disappears|I can't keep an appetite
+\bI\s+lose\s+my\s+motivation\b	I lose all motivation|My motivation disappears|I can't stay motivated
+\bMy\s+passion\s+for\s+life\s+has\s+disappeared\b	My passion for life is gone|My passion for life has vanished|I have no passion for life
+\bI\s+almost\s+cried\b	I nearly cried|I almost broke down crying|I almost burst into tears
+\bI\s+sadly\b	Sadly, I|Regretfully, I|Unfortunately, I
+\bIn\s+retrospect\b	Looking back|In hindsight|When I look back
+\bMy\s+social\s+skills\b	My social skills now|My social skills honestly|My social skills truly
+\bMy\s+energy\s+levels\b	My energy levels are|My energy levels feel|My energy levels stay
+\bI\s+cant\b	I cannot|I just can't|I can't even
+\bI\s+cant\s+eat\b	I cannot eat|I just can't eat|I can't manage to eat
+\bHating\s+my\s+failure\b	Hating my own failure|Loathing my failure|Despising my failure
+\bThere'?s\s+just\s+nothing\b	There's absolutely nothing|There's truly nothing|There is nothing at all
+\bI\s+stopped\s+interacting\b	I have stopped interacting|I completely stopped interacting|I basically stopped interacting
+\bSo\s+did\s+I\b	Same here|I did too|I went through that as well
+\bI\s+hardly\s+eat\s+or\s+sleep\b	I barely eat or sleep|I almost don't eat or sleep|I can barely eat or sleep
+\bI\s+would\s+like\s+to\s+die\b	I would rather die|I feel like dying|I want to die
+\bI\s+recently\s+lost\s+all\s+interest\b	I recently lost any interest|I recently lost every bit of interest|Lately I've lost all interest
+\blost\s+interest\b	lost the interest|lost any interest|lost all interest
+\bhave\s+lost\s+interest\b	have lost all interest|have lost any interest|have lost the interest
+\bI\s+keep\s+procrastinating\b	I constantly procrastinate|I keep on procrastinating|I habitually procrastinate
+\bhating\s+myself\b	loathing myself|despising myself|detesting myself
+\bwishing\s+I\s+was\s+someone\s+else\b	wishing I were someone else|wishing I could be someone else|wishing I wasn't myself
+\bImma\s+go\s+kill\s+myself\b	I'm about to go kill myself|I'm going to go kill myself|I'm gonna go kill myself
+\bI\s+lack\s+the\s+motivation\b	I lack any motivation|I lack all motivation|I just don't have the motivation
+\bMy\s+self\s+esteem\b	My self esteem honestly|My self esteem truly|My self esteem has
+\bself-esteem\b	self worth|sense of worth|confidence in myself
+\bproblems\s+with\s+concentration\b	concentration problems|struggles focusing|issues concentrating
+\bit\s+makes\s+me\s+extremely\s+sad\b	it leaves me extremely sad|it makes me incredibly sad|it makes me deeply sad
+\bIt\s+makes\s+me\s+extremely\s+sad\b	It leaves me extremely sad|It makes me incredibly sad|It makes me deeply sad
+\bForever\s+Alone\b	Always alone|Perpetually alone|Forever isolated
+\bI\s+have\s+this\s+problem\b	I struggle with this problem|I deal with this problem|I face this problem
+\bI\s+have\s+a\s+lot\s+of\s+trouble\b	I really struggle|I have a ton of trouble|I have a huge amount of trouble
+\bI\s+have\s+atrocious\s+self-esteem\b	I have awful self-esteem|I have terrible self-esteem|My self-esteem is atrocious
+\bAllowing\s+myself\b	Letting myself|Giving myself permission|Allowing myself personally
+\bI\s+recently\s+lost\s+interest\b	I recently lost any interest|I recently lost all interest|Recently I've lost interest
+\bI\s+really\s+hate\s+myself\b	I truly hate myself|I absolutely hate myself|I really despise myself
+\bI\s+just\s+really\s+hate\s+myself\b	I honestly really hate myself|I genuinely really hate myself|I really just hate myself
+\bI\s+just\s+really\s+hate\s+myself\s+and\s+everything\s+about\s+me\b	I genuinely really hate myself and everything about me|I truly really hate myself and everything about me|I absolutely hate myself and everything about me
+\bI\s+have\s+to\s+say\s+what\s+I\s+want\s+to\s+say\b	I feel I must say what I want to say|I need to say what I want to say|I have got to say what I want to say
+\bI\s+get\s+nervous\b	I become nervous|I start to get nervous|I grow nervous
+\bI\s+became\s+insecure\b	I became really insecure|I grew insecure|I ended up insecure
+\blow\s+in\s+confidence\b	low on confidence|short on confidence|lacking confidence
+\bI\s+regret\s+so\s+much\b	I truly regret so much|I deeply regret so much|I regret a tremendous amount
+\bmy\s+only\s+answer\b	my sole answer|the only answer I see|the only answer for me
+\bI\s+became\s+\w+\s+insecure\b	I became extremely insecure|I became terribly insecure|I became hugely insecure
+\bI\s+saw\s+my\s+life\b	I looked at my life|I viewed my life|I saw my whole life
+\bhated\s+myself\b	despised myself|loathed myself|couldn't stand myself
+\bI\s+have\s+to\s+say\b	I feel I have to say|I desperately need to say|I really have to say
+\bI\s+saw\s+my\s+life\s+for\b	I viewed my life for|I finally saw my life for|I genuinely saw my life for
+\bI\s+stopped\s+going\b	I ended up not going|I eventually stopped going|I ultimately stopped going
+\bI\s+became\s+\w+\s+and\s+low\s+in\s+confidence\b	I became extremely and low in confidence|I became incredibly and low in confidence|I became terribly and low in confidence
+\bidentify\s+all\s+the\s+emotions\b	list all the emotions|name all the emotions|identify every emotion
+\bi\s+can\s+sleep\s+after\b	i'm able to sleep after|i can manage sleep after|i can finally sleep after
+\bSo,\s+long\s+story\s+short\b	Long story short|To summarize|To cut a long story short
+\bI\s+just\s+need\s+to\s+spend\s+some\s+time\b	I simply need to spend some time|I really just need to spend some time|I just have to spend some time
+\bI\s+killed\s+myself\b	I ended up killing myself|I wound up killing myself|I literally killed myself
+\bI'd\s+kill\s+myself\b	I would kill myself|I'd end up killing myself|I'd literally kill myself
+\bMaybe\s+I\s+deserve\b	Perhaps I deserve|Maybe I truly deserve|Maybe I actually deserve
+\bI\s+simply\s+want\s+to\s+die\b	I just want to die|I simply wish to die|I just truly want to die
+\bcloser\s+to\s+suicide\b	closer toward suicide|closer and closer to suicide|nearer to suicide
+\bI\s+tried\s+to\s+kill\s+myself\b	I attempted to kill myself|I tried killing myself|I made an attempt to kill myself
+\bI\s+just\s+need\s+to\s+spend\b	I simply need to spend|I really need to spend|I genuinely need to spend
+\bI\s+j+u+s+t\s+need\s+to\s+spend\b	I really just need to spend|I genuinely just need to spend|I simply just need to spend
+\bI\s+just\s+need\s+to\s+spend\s+some\b	I simply need to spend some|I really need to spend some|I genuinely need to spend some
+\bI\s+just\s+need\s+to\s+spend\s+some\s+time\s+and\s+make\s+decisions\b	I really need to spend some time and make decisions|I simply need to spend some time and make decisions|I genuinely need to spend some time and make decisions
+\band\s+make\s+decisions\b	and make some decisions|and decide things|and figure things out
+\bI\s+saw\s+my\s+life\s+for\s+what\s+it\s+really\s+was\b	I saw my life for what it truly was|I saw my life for what it actually was|I finally saw my life for what it really was
+\bI\s+saw\s+my\s+life\s+for\s+what\s+it\s+really\s+was\s+and\s+absolutely\s+hated\s+myself\b	I saw my life for what it really was and completely hated myself|I saw my life for what it really was and utterly hated myself|I saw my life for what it really was and truly hated myself
+\bhated\s+myself\s+for\s+torturing\s+myself\b	despised myself for torturing myself|loathed myself for torturing myself|abhorred myself for torturing myself
+\bi\s+became\s+insecure\b	i became incredibly insecure|i became very insecure|i became deeply insecure
+\bthere\s+was\s+nothing\s+to\s+be\s+happy\b	there was absolutely nothing to be happy|there was nothing at all to be happy|there was truly nothing to be happy
+\bwhatever\s+angle\s+you\s+choose\s+to\s+look\s+at\s+it\s+from\b	whatever angle you choose to view it from|no matter which angle you choose to look from|from whichever angle you choose to look at it
+\ba\s+future\b	any future|a real future|some future
+\bAnd\s+yet\s+I\s+was\s+happy\b	Even though I was happy|And yet I had been happy|Even so I was happy
+\bI\s+tried\s+to\s+kill\s+myself\s+a\s+few\s+more\s+times\b	I tried to take my life a few more times|I attempted to kill myself a few more times|I made a few more suicide attempts
