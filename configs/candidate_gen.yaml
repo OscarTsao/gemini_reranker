@@ -21,10 +21,10 @@ candidate_gen:
 
 data:
   # Input clinical notes with criteria
-  raw_path: "data/raw/train.jsonl"
+  raw_path: "data/raw/redsm5_train.jsonl"
 
   # Output judging jobs
-  judging_jobs_path: "data/proc/judging_jobs.jsonl"
+  judging_jobs_path: "data/proc/redsm5_judging_jobs.jsonl"
 
 # Reproducibility
 seed: 42

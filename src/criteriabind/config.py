@@ -87,12 +87,12 @@ class TrainingConfig:
 class DataConfig:
     """Data paths used across the pipeline."""
 
-    raw_path: str = "data/raw/train.jsonl"
-    judging_jobs_path: str = "data/proc/judging_jobs.jsonl"
-    judged_path: str = "data/judged/train.jsonl"
-    pairwise_path: str = "data/pairs/criteria_train.jsonl"
-    dev_path: Optional[str] = None
-    test_path: Optional[str] = None
+    raw_path: str = "data/raw/redsm5_train.jsonl"
+    judging_jobs_path: str = "data/proc/redsm5_judging_jobs.jsonl"
+    judged_path: str = "data/judged/redsm5_train.jsonl"
+    pairwise_path: str = "data/pairs/redsm5_criteria_train.jsonl"
+    dev_path: Optional[str] = "data/pairs/redsm5_criteria_dev.jsonl"
+    test_path: Optional[str] = "data/pairs/redsm5_criteria_test.jsonl"
 
 
 @dataclass(slots=True)

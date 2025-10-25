@@ -22,10 +22,10 @@ inference:
 
 data:
   # Input notes to process
-  notes_path: "data/raw/test.jsonl"
+  notes_path: "data/raw/redsm5_test.jsonl"
 
   # Output predictions
-  output_path: "data/proc/infer.jsonl"
+  output_path: "data/proc/redsm5_infer.jsonl"
 
 # Optional: threshold for filtering low-confidence predictions
 confidence_threshold: 0.5

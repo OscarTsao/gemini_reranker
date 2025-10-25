@@ -65,8 +65,8 @@ def test_training_config_to_dict() -> None:
 def test_data_config_defaults() -> None:
     """Test DataConfig default values."""
     config = DataConfig()
-    assert config.raw_path == "data/raw/train.jsonl"
-    assert config.dev_path is None
+    assert config.raw_path == "data/raw/redsm5_train.jsonl"
+    assert config.dev_path == "data/pairs/redsm5_criteria_dev.jsonl"
 
 
 def test_run_config() -> None:

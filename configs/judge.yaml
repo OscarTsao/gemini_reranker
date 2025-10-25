@@ -34,7 +34,7 @@ judge:
 
 data:
   # Input judging jobs
-  judging_jobs_path: "data/proc/judging_jobs.jsonl"
+  judging_jobs_path: "data/proc/redsm5_judging_jobs.jsonl"
 
   # Output judged items
-  judged_path: "data/judged/train.jsonl"
+  judged_path: "data/judged/redsm5_train.jsonl"

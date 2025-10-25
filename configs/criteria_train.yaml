@@ -1,6 +1,6 @@
 training:
-  model_name_or_path: bert-base-uncased
-  output_dir: data/models/criteria_run
+  model_name_or_path: baselines/dataaug_trial_0043/model/best
+  output_dir: data/models/redsm5_criteria_run
   epochs: 1
   batch_size: 4
   grad_accum_steps: 1
@@ -11,9 +11,10 @@ training:
   margin: 0.2
   mlflow_run_name: criteria-ranker-demo
 data:
-  pairwise_path: data/pairs/criteria_train.jsonl
-  dev_path: data/pairs/criteria_dev.jsonl
-  test_path: data/pairs/criteria_test.jsonl
+  raw_path: data/raw/redsm5_train.jsonl
+  pairwise_path: data/pairs/redsm5_criteria_train.jsonl
+  dev_path: data/pairs/redsm5_criteria_dev.jsonl
+  test_path: data/pairs/redsm5_criteria_test.jsonl
 judge:
   model: gemini-2.5-flash
   rubric_version: clinical_rubric_v1

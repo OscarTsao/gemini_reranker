@@ -194,8 +194,8 @@ def build_judging_jobs(
 class CandidateGenArgs:
     """CLI arguments for candidate generation."""
 
-    in_path: Path = Path("data/raw/train.jsonl")
-    out_path: Path = Path("data/proc/judging_jobs.jsonl")
+    in_path: Path = Path("data/raw/redsm5_train.jsonl")
+    out_path: Path = Path("data/proc/redsm5_judging_jobs.jsonl")
     k: int = 10
     span_lengths: tuple[int, int, int] = (10, 20, 30)
 

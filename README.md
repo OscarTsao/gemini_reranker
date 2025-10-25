@@ -7,6 +7,7 @@ Criteria Bind refines an SFT-tuned BERT-like model for DSM-style clinical criter
 ```bash
 make setup
 python scripts/prepare_demo_data.py
+python scripts/prepare_redsm5_data.py
 make judge          # requires GEMINI_API_KEY
 make train-criteria
 make train-evidence
@@ -17,11 +18,15 @@ make test
 The `Makefile` targets assume YAML configs in `configs/`. You can also run the CLIs directly with Tyro-powered flags, for example:
 
 ```bash
-python -m criteriabind.candidate_gen --in data/raw/train.jsonl --out data/proc/jobs.jsonl --k 8
-python -m criteriabind.gemini_judge --in data/proc/jobs.jsonl --out data/judged/train.jsonl --model gemini-2.5-flash
-python -m criteriabind.pair_builder --in data/judged/train.jsonl --out-train data/pairs/criteria_train.jsonl --out-dev data/pairs/criteria_dev.jsonl --out-test data/pairs/criteria_test.jsonl
-python -m criteriabind.train_criteria_ranker --pairs-path data/pairs/criteria_train.jsonl --dev-path data/pairs/criteria_dev.jsonl --model-name-or-path bert-base-uncased
+python -m criteriabind.candidate_gen --in-path data/raw/redsm5_train.jsonl --out-path data/proc/redsm5_judging_jobs.jsonl --k 8
+python -m criteriabind.gemini_judge --in-path data/proc/redsm5_judging_jobs.jsonl --out-path data/judged/redsm5_train.jsonl --model gemini-2.5-flash
+python -m criteriabind.pair_builder --in data/judged/redsm5_train.jsonl --out-train data/pairs/redsm5_criteria_train.jsonl --out-dev data/pairs/redsm5_criteria_dev.jsonl --out-test data/pairs/redsm5_criteria_test.jsonl
+python -m criteriabind.train_criteria_ranker --pairs-path data/pairs/redsm5_criteria_train.jsonl --dev-path data/pairs/redsm5_criteria_dev.jsonl --model-name-or-path baselines/dataaug_trial_0043/model/best
 ```
+
+## Baseline Artifacts
+
+The Optuna trial `0043` DeBERTa classifier from `DataAugmentation_Evaluation` (test F1 **0.8535**) is mirrored under `baselines/dataaug_trial_0043/`. It includes the frozen checkpoint, validation/test metrics, and the hybrid/nlpaug/textattack augmentation CSVs plus ground truth labels. Use it as a warm-start checkpoint or to benchmark Gemini-judged tuning runs.
 
 ## Project Layout
 

@@ -22,10 +22,10 @@ make infer                    # Run inference on test data
 ### Direct CLI Usage
 All modules support Tyro-powered CLI with flag overrides:
 ```bash
-python -m criteriabind.candidate_gen --in data/raw/train.jsonl --out data/proc/jobs.jsonl --k 8
-python -m criteriabind.gemini_judge --in data/proc/jobs.jsonl --out data/judged/train.jsonl --model gemini-2.5-flash
-python -m criteriabind.pair_builder --in data/judged/train.jsonl --out-train data/pairs/criteria_train.jsonl --out-dev data/pairs/criteria_dev.jsonl --out-test data/pairs/criteria_test.jsonl
-python -m criteriabind.train_criteria_ranker --pairs-path data/pairs/criteria_train.jsonl --dev-path data/pairs/criteria_dev.jsonl --model-name-or-path bert-base-uncased
+python -m criteriabind.candidate_gen --in-path data/raw/redsm5_train.jsonl --out-path data/proc/redsm5_judging_jobs.jsonl --k 8
+python -m criteriabind.gemini_judge --in-path data/proc/redsm5_judging_jobs.jsonl --out-path data/judged/redsm5_train.jsonl --model gemini-2.5-flash
+python -m criteriabind.pair_builder --in data/judged/redsm5_train.jsonl --out-train data/pairs/redsm5_criteria_train.jsonl --out-dev data/pairs/redsm5_criteria_dev.jsonl --out-test data/pairs/redsm5_criteria_test.jsonl
+python -m criteriabind.train_criteria_ranker --pairs-path data/pairs/redsm5_criteria_train.jsonl --dev-path data/pairs/redsm5_criteria_dev.jsonl --model-name-or-path baselines/dataaug_trial_0043/model/best
 ```
 
 ### Running Single Test

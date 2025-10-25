@@ -21,13 +21,14 @@ LOGGER = get_logger(__name__)
 
 @dataclass
 class InferArgs:
-    notes_path: Path = Path("data/raw/test.jsonl")
-    output_path: Path = Path("data/proc/inference.jsonl")
-    model_name_or_path: str = "bert-base-uncased"
+    notes_path: Path = Path("data/raw/redsm5_test.jsonl")
+    output_path: Path = Path("data/proc/redsm5_inference.jsonl")
+    model_name_or_path: str = "baselines/dataaug_trial_0043/model/best"
     criteria_checkpoint: Optional[Path] = None
     qa_checkpoint: Optional[Path] = None
     threshold: float = 0.5
     k: int = 5
+    max_length: int = 384
     seed: int = 42
 
 
@@ -49,7 +50,7 @@ def load_models(args: InferArgs):
         qa_state = torch.load(args.qa_checkpoint, map_location="cpu")
         qa_model.load_state_dict(qa_state)
         qa_model.eval()
-    return model, tokenizer, qa_model
+    return model, tokenizer, qa_model, bundle.max_length
 
 
 def score_candidates(
@@ -84,18 +85,29 @@ def run_inference(args: InferArgs) -> None:
     seed_everything(args.seed)
     samples = load_samples(args.notes_path)
     LOGGER.info("Loaded %d samples", len(samples))
-    model, tokenizer, qa_model = load_models(args)
+    model, tokenizer, qa_model, bundle_max_length = load_models(args)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model.to(device)
     if qa_model:
         qa_model.to(device)
         qa_model.eval()
+    max_length = args.max_length
+    if bundle_max_length is not None:
+        max_length = min(max_length, bundle_max_length)
+        LOGGER.info("Capping inference sequence length to %d", max_length)
 
     outputs: List[Dict] = []
     for sample in samples:
         for criterion in sample.criteria:
             candidates = generate_candidates(sample, criterion, k=args.k, span_lengths=(10, 20))
-            scores = score_candidates(model, tokenizer, criterion, candidates, device=device)
+            scores = score_candidates(
+                model,
+                tokenizer,
+                criterion,
+                candidates,
+                device=device,
+                max_length=max_length,
+            )
             ranked = sorted(zip(candidates, scores), key=lambda x: x[1], reverse=True)
             top_score = ranked[0][1] if ranked else 0.0
             pred_label = int(top_score >= args.threshold)

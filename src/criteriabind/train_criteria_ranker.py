@@ -72,10 +72,10 @@ class TrainArgs:
     """CLI arguments."""
 
     config: Optional[Path] = None
-    pairs_path: Path = Path("data/pairs/criteria_train.jsonl")
-    dev_path: Optional[Path] = Path("data/pairs/criteria_dev.jsonl")
-    output_dir: Path = Path("data/models/criteria")
-    model_name_or_path: str = "bert-base-uncased"
+    pairs_path: Path = Path("data/pairs/redsm5_criteria_train.jsonl")
+    dev_path: Optional[Path] = Path("data/pairs/redsm5_criteria_dev.jsonl")
+    output_dir: Path = Path("data/models/redsm5_criteria")
+    model_name_or_path: str = "baselines/dataaug_trial_0043/model/best"
     epochs: int = 1
     batch_size: int = 4
     grad_accum_steps: int = 1
@@ -153,12 +153,16 @@ def train_loop(args: TrainArgs, cfg: Optional[TrainingConfig] = None) -> None:
     bundle = load_cross_encoder(args.model_name_or_path if cfg is None else cfg.model_name_or_path)
     model = bundle.model.to(device)
     tokenizer = bundle.tokenizer
+    max_length = args.max_length if cfg is None else cfg.max_length
+    if bundle.max_length is not None:
+        max_length = min(max_length, bundle.max_length)
+        LOGGER.info("Capping sequence length to %d based on checkpoint", max_length)
 
     data_loader = DataLoader(
         dataset,
         batch_size=args.batch_size if cfg is None else cfg.batch_size,
         shuffle=True,
-        collate_fn=lambda batch: collate_fn(batch, tokenizer, args.max_length if cfg is None else cfg.max_length),
+        collate_fn=lambda batch: collate_fn(batch, tokenizer, max_length),
     )
     dev_loader = None
     if dev_rows:
@@ -166,7 +170,7 @@ def train_loop(args: TrainArgs, cfg: Optional[TrainingConfig] = None) -> None:
             PairwiseDataset(dev_rows),
             batch_size=args.batch_size if cfg is None else cfg.batch_size,
             shuffle=False,
-            collate_fn=lambda batch: collate_fn(batch, tokenizer, args.max_length if cfg is None else cfg.max_length),
+            collate_fn=lambda batch: collate_fn(batch, tokenizer, max_length),
         )
 
     optimizer = AdamW(
