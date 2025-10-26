@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
+from collections.abc import Iterable
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Iterable, Optional
+from typing import Any
 
 import yaml
 
@@ -16,7 +17,7 @@ class JudgeConfig:
     model: str = "gemini-2.5-flash"
     response_mime: str = "application/json"
     rubric_version: str = "clinical_rubric_v1"
-    safety: Dict[str, str] = field(
+    safety: dict[str, str] = field(
         default_factory=lambda: {
             "hate_speech": "BLOCK_MEDIUM_AND_ABOVE",
             "harassment": "BLOCK_MEDIUM_AND_ABOVE",
@@ -30,7 +31,7 @@ class JudgeConfig:
     enable_two_pass: bool = True
     drop_on_conflict: bool = True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -49,7 +50,7 @@ class SchedulerConfig:
     """Scheduler hyperparameters."""
 
     warmup_steps: int = 100
-    total_steps: Optional[int] = None
+    total_steps: int | None = None
     num_cycles: float = 0.5
 
 
@@ -66,21 +67,20 @@ class TrainingConfig:
     max_grad_norm: float = 1.0
     seed: int = 42
     mixed_precision: str = "bf16"
-    resume_from: Optional[str] = None
+    resume_from: str | None = None
     log_interval: int = 50
     eval_interval: int = 500
     save_interval: int = 1000
     loss_type: str = "ranknet"
     margin: float = 0.3
-    mlflow_run_name: Optional[str] = None
+    mlflow_run_name: str | None = None
     optimizer: OptimizerConfig = field(default_factory=OptimizerConfig)
     scheduler: SchedulerConfig = field(default_factory=SchedulerConfig)
-    extra_metrics: Dict[str, Any] = field(default_factory=dict)
+    extra_metrics: dict[str, Any] = field(default_factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert nested dataclasses to dict for logging."""
-        data = asdict(self)
-        return data
+        return asdict(self)
 
 
 @dataclass(slots=True)
@@ -91,8 +91,8 @@ class DataConfig:
     judging_jobs_path: str = "data/proc/redsm5_judging_jobs.jsonl"
     judged_path: str = "data/judged/redsm5_train.jsonl"
     pairwise_path: str = "data/pairs/redsm5_criteria_train.jsonl"
-    dev_path: Optional[str] = "data/pairs/redsm5_criteria_dev.jsonl"
-    test_path: Optional[str] = "data/pairs/redsm5_criteria_test.jsonl"
+    dev_path: str | None = "data/pairs/redsm5_criteria_dev.jsonl"
+    test_path: str | None = "data/pairs/redsm5_criteria_test.jsonl"
 
 
 @dataclass(slots=True)
@@ -103,7 +103,7 @@ class RunConfig:
     data: DataConfig = field(default_factory=DataConfig)
     judge: JudgeConfig = field(default_factory=JudgeConfig)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "training": self.training.to_dict(),
             "data": asdict(self.data),
@@ -111,13 +111,12 @@ class RunConfig:
         }
 
 
-def load_yaml_config(path: str | Path) -> Dict[str, Any]:
+def load_yaml_config(path: str | Path) -> dict[str, Any]:
     """Load a YAML config into a dictionary."""
     with Path(path).open("r", encoding="utf-8") as fp:
         data = yaml.safe_load(fp) or {}
     if not isinstance(data, dict):
-        msg = f"Config at {path} must be a dictionary."
-        raise ValueError(msg)
+        raise TypeError(f"Config at {path} must be a dictionary.")
     return data
 
 
@@ -130,16 +129,16 @@ def build_run_config(path: str | Path) -> RunConfig:
     return RunConfig(training=training_cfg, data=data_cfg, judge=judge_cfg)
 
 
-def update_dataclass(instance: Any, updates: Dict[str, Any]) -> None:
+def update_dataclass(instance: Any, updates: dict[str, Any]) -> None:
     """Update fields on a dataclass instance in-place."""
     for key, value in updates.items():
         if hasattr(instance, key):
             setattr(instance, key, value)
 
 
-def merge_dicts(*dicts: Iterable[Dict[str, Any]]) -> Dict[str, Any]:
+def merge_dicts(*dicts: Iterable[dict[str, Any]]) -> dict[str, Any]:
     """Shallow merge dictionaries left-to-right."""
-    merged: Dict[str, Any] = {}
+    merged: dict[str, Any] = {}
     for dct in dicts:
         merged.update(dct)
     return merged

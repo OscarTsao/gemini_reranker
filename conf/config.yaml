@@ -1,0 +1,19 @@
+defaults:
+  - mlflow: local
+  - hardware: auto
+  - data: redsm5_demo
+  - model: deberta_v3_small
+  - train: ranker_fast
+  - judge: offline_mock
+  - _self_
+
+seed: 42
+project_name: gemini_reranker
+output_dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}-${hydra:job.name}
+
+hydra:
+  run:
+    dir: ${output_dir}
+  sweep:
+    dir: multirun/${hydra:job.name}
+    subdir: ${hydra.job.num}

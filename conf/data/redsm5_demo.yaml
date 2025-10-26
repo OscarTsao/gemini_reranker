@@ -1,0 +1,10 @@
+name: redsm5_demo
+path: demo_data/redsm5
+split_by_note_hash: true
+max_samples: 200
+cache_dir: .cache/data
+tokenizer_name: ${model.tokenizer_name}
+padding: longest
+truncation: true
+max_length: 512
+bucketed_batches: true

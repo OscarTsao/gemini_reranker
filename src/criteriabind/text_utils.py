@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import re
-from typing import Iterable, List, Sequence, Tuple
+from collections.abc import Sequence
+
 
 try:
     from nltk import sent_tokenize
@@ -20,7 +21,7 @@ def normalize_whitespace(text: str) -> str:
     return text
 
 
-def sentence_tokenize(text: str) -> List[str]:
+def sentence_tokenize(text: str) -> list[str]:
     """Tokenise text into sentences with NLTK fallback."""
     text = normalize_whitespace(text)
     if sent_tokenize:
@@ -40,13 +41,13 @@ def chunk_text(
     max_tokens: int,
     stride: int | None = None,
     token_pattern: str = r"\w+|\S",
-) -> List[str]:
+) -> list[str]:
     """Chunk text into overlapping windows based on regex token counts."""
     tokens = re.findall(token_pattern, text)
     if not tokens:
         return [text] if text else []
     stride = stride or max(max_tokens // 2, 1)
-    windows: List[str] = []
+    windows: list[str] = []
     for start in range(0, len(tokens), stride):
         end = min(start + max_tokens, len(tokens))
         if start >= end:
@@ -58,9 +59,9 @@ def chunk_text(
     return windows
 
 
-def extract_spans(text: str, sentence: str, span_lengths: Sequence[int]) -> List[Tuple[int, int, str]]:
+def extract_spans(text: str, sentence: str, span_lengths: Sequence[int]) -> list[tuple[int, int, str]]:
     """Generate candidate spans within a sentence, returning (start, end, span_text)."""
-    spans: List[Tuple[int, int, str]] = []
+    spans: list[tuple[int, int, str]] = []
     sentence = normalize_whitespace(sentence)
     base_index = text.find(sentence)
     if base_index == -1:
@@ -71,7 +72,7 @@ def extract_spans(text: str, sentence: str, span_lengths: Sequence[int]) -> List
     for length in span_lengths:
         if length <= 0:
             continue
-        for start in range(0, len(tokens)):
+        for start in range(len(tokens)):
             end = start + length
             if end > len(tokens):
                 break

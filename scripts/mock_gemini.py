@@ -8,7 +8,6 @@ for testing, CI/CD pipelines, and development without API costs.
 from __future__ import annotations
 
 import re
-from typing import List
 
 from criteriabind.schemas import Candidate, JudgeResult
 
@@ -59,7 +58,7 @@ def _compute_overlap_score(criterion_keywords: set[str], candidate_keywords: set
     return intersection / union if union > 0 else 0.0
 
 
-def score_candidates(criterion: str, candidates: List[Candidate]) -> JudgeResult:
+def score_candidates(criterion: str, candidates: list[Candidate]) -> JudgeResult:
     """Score candidates deterministically based on keyword overlap with criterion.
 
     This function provides a deterministic alternative to Gemini API judging.
@@ -82,7 +81,7 @@ def score_candidates(criterion: str, candidates: List[Candidate]) -> JudgeResult
     criterion_keywords = _extract_keywords(criterion)
 
     # Compute scores for all candidates
-    scores: List[tuple[int, float]] = []
+    scores: list[tuple[int, float]] = []
     for idx, candidate in enumerate(candidates):
         candidate_keywords = _extract_keywords(candidate.text)
         score = _compute_overlap_score(criterion_keywords, candidate_keywords)

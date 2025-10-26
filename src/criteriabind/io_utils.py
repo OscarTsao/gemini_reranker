@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import itertools
 import math
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from pathlib import Path
-from typing import Iterable, Iterator, List, Sequence, TypeVar, Callable
+from typing import TypeVar
 
 import ujson
 
 from .schemas import SchemaEncoder
+
 
 T = TypeVar("T")
 
@@ -29,17 +31,17 @@ def read_jsonl(path: str | Path) -> Iterator[dict]:
     """
     path_obj = Path(path)
     if not path_obj.exists():
-        raise FileNotFoundError(f"File not found: {path}")
+        raise FileNotFoundError(path)
 
     with path_obj.open("r", encoding="utf-8") as handle:
-        for line_num, line in enumerate(handle, 1):
-            line = line.strip()
-            if not line:
+        for line_num, raw_line in enumerate(handle, 1):
+            stripped = raw_line.strip()
+            if not stripped:
                 continue
             try:
-                yield ujson.loads(line)
-            except ValueError as e:
-                raise ValueError(f"Invalid JSON at line {line_num} in {path}: {e}") from e
+                yield ujson.loads(stripped)
+            except ValueError as error:
+                raise ValueError(f"Invalid JSON at line {line_num}") from error
 
 
 def write_jsonl(path: str | Path, rows: Iterable[dict | SchemaEncoder]) -> None:
@@ -57,7 +59,7 @@ def write_sharded_jsonl(
     path_pattern: str,
     rows: Sequence[dict | SchemaEncoder],
     shard_size: int,
-) -> List[str]:
+) -> list[str]:
     """Write rows into sharded JSONL files following the provided pattern.
 
     Args:
@@ -71,7 +73,7 @@ def write_sharded_jsonl(
     """
     total = len(rows)
     num_shards = math.ceil(total / shard_size) if shard_size > 0 else 1
-    paths: List[str] = []
+    paths: list[str] = []
     for shard_idx in range(num_shards):
         start = shard_idx * shard_size
         end = min(total, (shard_idx + 1) * shard_size)
@@ -82,7 +84,7 @@ def write_sharded_jsonl(
     return paths
 
 
-def batched(iterable: Iterable[T], batch_size: int) -> Iterator[List[T]]:
+def batched(iterable: Iterable[T], batch_size: int) -> Iterator[list[T]]:
     """Chunk an iterable into lists of ``batch_size``."""
     if batch_size <= 0:
         raise ValueError("batch_size must be positive")

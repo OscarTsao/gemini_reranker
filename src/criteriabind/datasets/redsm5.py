@@ -14,18 +14,20 @@ from __future__ import annotations
 
 import csv
 import hashlib
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Optional
 
 from ..io_utils import write_jsonl
 from ..logging_utils import get_logger
 from ..schemas import Sample
 
+
 LOGGER = get_logger(__name__)
 
 # Canonical order used by the baseline artifacts and downstream configs.
-SYMPTOM_ORDER: Tuple[str, ...] = (
+SYMPTOM_ORDER: tuple[str, ...] = (
     "DEPRESSED_MOOD",
     "ANHEDONIA",
     "APPETITE_CHANGE",
@@ -39,7 +41,7 @@ SYMPTOM_ORDER: Tuple[str, ...] = (
 )
 
 # Human-readable descriptions surfaced to Gemini and other consumers.
-SYMPTOM_DESCRIPTIONS: Dict[str, str] = {
+SYMPTOM_DESCRIPTIONS: dict[str, str] = {
     "DEPRESSED_MOOD": "Persistent depressed mood most of the day, nearly every day",
     "ANHEDONIA": "Markedly diminished interest or pleasure in almost all activities",
     "APPETITE_CHANGE": "Significant weight loss or gain, or change in appetite",
@@ -64,8 +66,8 @@ class AnnotationRow:
     explanation: Optional[str]
 
 
-def _load_posts(csv_path: Path) -> Dict[str, str]:
-    posts: Dict[str, str] = {}
+def _load_posts(csv_path: Path) -> dict[str, str]:
+    posts: dict[str, str] = {}
     with csv_path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
@@ -78,8 +80,8 @@ def _load_posts(csv_path: Path) -> Dict[str, str]:
     return posts
 
 
-def _load_annotations(csv_path: Path) -> Dict[str, List[AnnotationRow]]:
-    grouped: Dict[str, List[AnnotationRow]] = {}
+def _load_annotations(csv_path: Path) -> dict[str, list[AnnotationRow]]:
+    grouped: dict[str, list[AnnotationRow]] = {}
     with csv_path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
@@ -117,11 +119,11 @@ def _assign_split(identifier: str, dev_ratio: float, test_ratio: float) -> str:
     return "train"
 
 
-def _build_metadata(annotations: Iterable[AnnotationRow]) -> Dict[str, Dict[str, object]]:
-    pos_sentences: Dict[str, List[str]] = {}
-    neg_sentences: Dict[str, List[str]] = {}
-    explanations: Dict[str, List[str]] = {}
-    labels: Dict[str, int] = {}
+def _build_metadata(annotations: Iterable[AnnotationRow]) -> dict[str, dict[str, object]]:
+    pos_sentences: dict[str, list[str]] = {}
+    neg_sentences: dict[str, list[str]] = {}
+    explanations: dict[str, list[str]] = {}
+    labels: dict[str, int] = {}
     for ann in annotations:
         if ann.status == 1 and ann.sentence_text:
             pos_sentences.setdefault(ann.symptom, []).append(ann.sentence_text)
@@ -141,7 +143,7 @@ def _build_metadata(annotations: Iterable[AnnotationRow]) -> Dict[str, Dict[str,
 def load_redsm5_samples(
     data_dir: Path = Path("data/redsm5"),
     include_special_case: bool = True,
-) -> List[Sample]:
+) -> list[Sample]:
     """Load the ReDSM5 dataset into :class:`Sample` objects.
 
     Args:
@@ -163,13 +165,13 @@ def load_redsm5_samples(
     posts = _load_posts(posts_csv)
     annotations = _load_annotations(annotations_csv)
 
-    samples: List[Sample] = []
+    samples: list[Sample] = []
     for post_id, text in posts.items():
         post_annotations = annotations.get(post_id, [])
         metadata = _build_metadata(post_annotations)
 
-        criteria_texts: List[str] = []
-        criteria_map: Dict[str, Dict[str, str | int]] = {}
+        criteria_texts: list[str] = []
+        criteria_map: dict[str, dict[str, str | int]] = {}
         for symptom in SYMPTOM_ORDER:
             if symptom == "SPECIAL_CASE" and not include_special_case:
                 continue
@@ -205,7 +207,7 @@ def prepare_redsm5_splits(
     test_ratio: float = 0.15,
     include_special_case: bool = True,
     prefix: str = "redsm5",
-) -> Dict[str, Path]:
+) -> dict[str, Path]:
     """Materialise JSONL splits from the CSV dataset.
 
     Args:
@@ -229,7 +231,7 @@ def prepare_redsm5_splits(
         buckets[split].append(sample)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    paths: Dict[str, Path] = {}
+    paths: dict[str, Path] = {}
     for split, split_samples in buckets.items():
         path = output_dir / f"{prefix}_{split}.jsonl"
         write_jsonl(path, (sample.to_dict() for sample in split_samples))

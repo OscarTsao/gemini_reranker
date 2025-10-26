@@ -1,0 +1,36 @@
+# Verification configuration
+defaults:
+  - mlflow: local
+  - hardware: auto  
+  - data: redsm5_demo
+  - model: deberta_v3_small
+  - judge: offline_mock
+  - _self_
+
+seed: 42
+project_name: gemini_reranker_verification
+
+# Short run settings for fast CI
+train:
+  max_steps: 300
+  eval_steps: 100
+  batch_size: 8
+
+data:
+  max_samples: 200
+
+# Verification thresholds
+thresholds:
+  min_metric_value: 0.0
+  max_metric_tolerance: 1e-6
+  compile_speedup_min: 0.05
+  amp_loss_tolerance: 0.20
+
+performance:
+  micro_benchmark_steps: 100
+  amp_comparison_steps: 50
+  determinism_runs: 2
+
+tests:
+  train_smoke_steps: 30
+  cpu_fallback_steps: 30

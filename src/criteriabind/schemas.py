@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -12,7 +12,7 @@ class SchemaEncoder(BaseModel):
 
     model_config = {"extra": "ignore"}
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return self.model_dump(mode="python")
 
     def to_json(self) -> str:
@@ -24,8 +24,8 @@ class Sample(SchemaEncoder):
 
     id: str
     note_text: str
-    criteria: List[str]
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    criteria: list[str]
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class Candidate(SchemaEncoder):
@@ -34,16 +34,16 @@ class Candidate(SchemaEncoder):
     text: str
     start: Optional[int] = None
     end: Optional[int] = None
-    extra: Dict[str, Any] = Field(default_factory=dict)
+    extra: dict[str, Any] = Field(default_factory=dict)
 
 
 class JudgeResult(SchemaEncoder):
     """Result returned from Gemini judging."""
 
     winner_index: int
-    rank: List[int]
+    rank: list[int]
     rationales: str
-    safety: Dict[str, Any]
+    safety: dict[str, Any]
     rubric_version: str
 
 
@@ -53,7 +53,7 @@ class JudgedItem(SchemaEncoder):
     id: str
     note_id: str
     criterion: str
-    candidates: List[Candidate]
+    candidates: list[Candidate]
     judge: JudgeResult
 
 
@@ -75,7 +75,7 @@ class JudgingJob(SchemaEncoder):
     id: str
     note_id: str
     criterion: str
-    candidates: List[Candidate]
+    candidates: list[Candidate]
 
 
 __all__ = [

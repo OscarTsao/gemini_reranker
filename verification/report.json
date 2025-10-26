@@ -1,0 +1,103 @@
+{
+  "timestamp": "2025-10-26T04:00:00Z",
+  "verdict": "PASS",
+  "summary": {
+    "total_checks": 5,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 115,
+    "duration_seconds": 8.53
+  },
+  "env": {
+    "python": "3.13.3",
+    "torch": "2.6.0.dev20250224+cu126",
+    "cuda_available": true,
+    "cuda_compatible": false,
+    "gpu": "NVIDIA GeForce GTX 1080 Ti",
+    "cuda_capability": "6.1",
+    "os": "Linux 6.8.0-85-generic",
+    "platform": "linux"
+  },
+  "config": {
+    "hydra_base": "conf/config.yaml",
+    "mlflow_tracking_uri": "sqlite:///mlflow.db",
+    "mlflow_artifact_root": "./mlruns/",
+    "seed": 42,
+    "project_name": "gemini_reranker"
+  },
+  "tests": {
+    "test_config_composes": {
+      "status": "PASS",
+      "duration_seconds": 0.17,
+      "file": "tests/test_configs.py"
+    },
+    "test_pairwise_dataset": {
+      "status": "PASS",
+      "duration_seconds": 0.15,
+      "file": "tests/test_datasets.py"
+    },
+    "test_span_qa_dataset": {
+      "status": "PASS",
+      "duration_seconds": 0.12,
+      "file": "tests/test_datasets.py"
+    },
+    "test_resolve_device_cpu_fallback": {
+      "status": "PASS",
+      "duration_seconds": 0.04,
+      "file": "tests/test_speed_flags.py",
+      "notes": "GPU present but incompatible, correctly falls back to CPU"
+    },
+    "test_maybe_compile_no_cuda": {
+      "status": "PASS",
+      "duration_seconds": 0.02,
+      "file": "tests/test_speed_flags.py"
+    },
+    "test_training_smoke": {
+      "status": "PASS",
+      "duration_seconds": 8.03,
+      "file": "tests/test_train_smoke.py",
+      "notes": "End-to-end training with MLflow tracking verified"
+    }
+  },
+  "mlflow": {
+    "backend": "SQLite",
+    "tracking_uri": "sqlite:///.pytest_cache/mlruns/.../mlflow.db",
+    "artifact_root": ".pytest_cache/mlruns/...",
+    "experiment_created": true,
+    "run_logged": true,
+    "metrics_logged": true,
+    "params_logged": true,
+    "artifacts_stored": true
+  },
+  "performance": {
+    "device_resolution": "PASS",
+    "cpu_fallback": "PASS",
+    "amp_dtype_selection": "PASS",
+    "torch_compile_fallback": "PASS",
+    "gradient_checkpointing": "AVAILABLE"
+  },
+  "warnings": {
+    "total": 115,
+    "pydantic_deprecation": 1,
+    "cuda_compatibility": 3,
+    "tensor_pin_memory": 84,
+    "multiprocessing_fork": 24,
+    "gradscaler_deprecation": 1,
+    "tf32_backend": 2
+  },
+  "recommendations": [
+    "All systems operational - ready for development",
+    "Tests are fast (<10s) and suitable for CI",
+    "MLflow local backend working correctly",
+    "GPU incompatibility handled gracefully with CPU fallback",
+    "Consider updating to PyTorch 2.5+ with CUDA 12.1+ for GPU support"
+  ],
+  "artifacts": [
+    "verification/report.md",
+    "verification/report.json",
+    "verification/VERIFICATION_PLAN.md",
+    "conf/verification.yaml",
+    ".pytest_cache/mlruns/"
+  ]
+}

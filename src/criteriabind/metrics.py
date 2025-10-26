@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Dict, Iterable, List, Sequence, Tuple
+from collections.abc import Iterable, Sequence
 
 import numpy as np
 from sklearn import metrics
@@ -13,7 +13,7 @@ def classification_metrics(
     y_true: Sequence[int],
     y_scores: Sequence[float],
     threshold: float = 0.5,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Compute precision/recall/F1/ROC-AUC/PR-AUC."""
     y_true_arr = np.asarray(y_true)
     y_scores_arr = np.asarray(y_scores)
@@ -47,14 +47,14 @@ def pairwise_accuracy(scores_pos: Sequence[float], scores_neg: Sequence[float]) 
 
 
 def mean_average_precision(
-    grouped_scores: Dict[str, List[Tuple[int, float]]],
+    grouped_scores: dict[str, list[tuple[int, float]]],
 ) -> float:
     """Compute MAP over grouped (label, score) lists keyed by query id."""
-    ap_values: List[float] = []
+    ap_values: list[float] = []
     for _, items in grouped_scores.items():
         sorted_items = sorted(items, key=lambda x: x[1], reverse=True)
         correct = 0
-        precision_at_k: List[float] = []
+        precision_at_k: list[float] = []
         for k, (label, _) in enumerate(sorted_items, start=1):
             if label > 0:
                 correct += 1
@@ -68,10 +68,10 @@ def group_scores(
     ids: Sequence[str],
     labels: Sequence[int],
     scores: Sequence[float],
-) -> Dict[str, List[Tuple[int, float]]]:
+) -> dict[str, list[tuple[int, float]]]:
     """Group scores by item id for MAP calculations."""
-    grouped: Dict[str, List[Tuple[int, float]]] = defaultdict(list)
-    for key, label, score in zip(ids, labels, scores):
+    grouped: dict[str, list[tuple[int, float]]] = defaultdict(list)
+    for key, label, score in zip(ids, labels, scores, strict=False):
         grouped[key].append((label, score))
     return grouped
 
@@ -101,11 +101,11 @@ def qa_f1(pred: str, reference: str) -> float:
 def qa_em_f1(
     predictions: Iterable[str],
     references: Iterable[str],
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Compute aggregated EM/F1 across examples."""
-    em_scores: List[float] = []
-    f1_scores: List[float] = []
-    for pred, ref in zip(predictions, references):
+    em_scores: list[float] = []
+    f1_scores: list[float] = []
+    for pred, ref in zip(predictions, references, strict=False):
         em_scores.append(qa_exact_match(pred, ref))
         f1_scores.append(qa_f1(pred, ref))
     return {
@@ -122,7 +122,7 @@ def hit_at_k(
     """Compute Hit@k for evidence retrieval."""
     hits = 0
     total = 0
-    for rankings, gold in zip(ranked_ids, ground_truth_ids):
+    for rankings, gold in zip(ranked_ids, ground_truth_ids, strict=False):
         total += 1
         if gold in rankings[:k]:
             hits += 1

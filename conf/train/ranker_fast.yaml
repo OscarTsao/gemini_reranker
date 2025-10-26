@@ -1,0 +1,13 @@
+task: criteria_ranker
+lr: 2e-5
+weight_decay: 0.01
+batch_size_per_device: 16
+max_steps: 1000
+warmup_ratio: 0.06
+scheduler: cosine
+eval_every_steps: 100
+save_every_steps: 200
+metric: map@10
+early_stop_patience: 5
+save_top_k: 1
+margin: 0.0

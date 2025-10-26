@@ -18,6 +18,11 @@ build/
 # Data directories with large files
 data/models/
 data/cache/
+mlruns/
+outputs/
+.cache/
+.pytest_cache/
+demo_data/
 
 # IDE
 .vscode/

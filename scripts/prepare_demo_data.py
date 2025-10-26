@@ -7,10 +7,8 @@ training and test datasets with varied clinical terminology.
 
 from __future__ import annotations
 
-import json
 import random
 from pathlib import Path
-from typing import List
 
 from criteriabind.schemas import Sample
 
@@ -419,7 +417,7 @@ CLINICAL_NOTES = [
 ]
 
 
-def build_demo_samples(num_samples: int = 20, seed: int = 42) -> List[Sample]:
+def build_demo_samples(num_samples: int = 20, seed: int = 42) -> list[Sample]:
     """Generate synthetic clinical note samples.
 
     Args:

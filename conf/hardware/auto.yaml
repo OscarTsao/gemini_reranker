@@ -1,0 +1,12 @@
+device: auto  # auto, cpu, cuda
+compile: true
+amp_dtype: bf16  # choices: fp16, bf16, none
+grad_accum_steps: 1
+gradient_checkpointing: true
+num_workers: auto
+persistent_workers: true
+prefetch_factor: 4
+pin_memory: true
+tf32: true
+fused_adamw: true
+cudnn_benchmark: true

@@ -16,14 +16,13 @@ Usage:
 
 from __future__ import annotations
 
-import json
 import os
 import subprocess
 import sys
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+
 
 try:
     from dotenv import load_dotenv
@@ -38,15 +37,15 @@ class PhaseResult:
     name: str
     passed: bool
     duration: float
-    details: List[str] = field(default_factory=list)
-    errors: List[str] = field(default_factory=list)
+    details: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
 
 @dataclass
 class VerificationReport:
     """Complete verification report."""
 
-    phases: List[PhaseResult]
+    phases: list[PhaseResult]
     total_duration: float
     overall_pass: bool
     python_version: str
@@ -58,7 +57,7 @@ class VerificationError(Exception):
 
 
 def run_command(
-    cmd: List[str],
+    cmd: list[str],
     description: str,
     capture_output: bool = True,
     check: bool = True,
@@ -302,7 +301,7 @@ def phase_c_data_pipeline() -> PhaseResult:
                 errors.append(f"Missing expected file: {file_path}")
             else:
                 # Count lines
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     num_lines = sum(1 for _ in f)
                 details.append(f"{file_path}: {num_lines} samples")
 
@@ -329,7 +328,7 @@ def phase_c_data_pipeline() -> PhaseResult:
         if not jobs_file.exists():
             errors.append("Candidate generation did not create jobs.jsonl")
         else:
-            with open(jobs_file, "r", encoding="utf-8") as f:
+            with open(jobs_file, encoding="utf-8") as f:
                 num_jobs = sum(1 for _ in f)
             details.append(f"Generated {num_jobs} judging jobs")
 
@@ -355,7 +354,7 @@ def phase_c_data_pipeline() -> PhaseResult:
         if not judged_file.exists():
             errors.append("Gemini judge did not create train.jsonl")
         else:
-            with open(judged_file, "r", encoding="utf-8") as f:
+            with open(judged_file, encoding="utf-8") as f:
                 num_judged = sum(1 for _ in f)
             details.append(f"Judged {num_judged} items")
 
@@ -389,7 +388,7 @@ def phase_c_data_pipeline() -> PhaseResult:
             if not Path(file_path).exists():
                 errors.append(f"Missing expected file: {file_path}")
             else:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     num_pairs = sum(1 for _ in f)
                 details.append(f"{file_path}: {num_pairs} pairs")
 
@@ -454,7 +453,7 @@ def phase_d_training(skip: bool = False) -> PhaseResult:
             errors.append("Training data not found, skipping training")
             passed = False
         else:
-            with open(train_file, "r", encoding="utf-8") as f:
+            with open(train_file, encoding="utf-8") as f:
                 num_samples = sum(1 for _ in f)
             if num_samples < 2:
                 errors.append(f"Insufficient training data: {num_samples} samples")
@@ -574,9 +573,9 @@ def phase_f_reproducibility() -> PhaseResult:
             )
 
         # Compare outputs
-        with open(output1, "r", encoding="utf-8") as f:
+        with open(output1, encoding="utf-8") as f:
             content1 = f.read()
-        with open(output2, "r", encoding="utf-8") as f:
+        with open(output2, encoding="utf-8") as f:
             content2 = f.read()
 
         if content1 == content2:
@@ -598,7 +597,7 @@ def phase_f_reproducibility() -> PhaseResult:
     return PhaseResult("Reproducibility", passed, duration, details, errors)
 
 
-def phase_g_report(phases: List[PhaseResult], total_duration: float) -> PhaseResult:
+def phase_g_report(phases: list[PhaseResult], total_duration: float) -> PhaseResult:
     """Phase G: Generate Report."""
     print("\n=== Phase G: Generate Report ===")
     start = time.time()
@@ -680,7 +679,7 @@ def main(skip_training: bool = False, skip_slow: bool = False) -> int:
     print("=" * 60)
 
     overall_start = time.time()
-    phases: List[PhaseResult] = []
+    phases: list[PhaseResult] = []
 
     # Run all phases
     phases.append(phase_a_environment())

@@ -1,0 +1,5 @@
+tracking_uri: sqlite:///mlflow.db
+experiment_name: gemini_reranker
+run_name: null
+artifact_root: ./mlruns
+autolog: true
