@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 
-from criteriabind.schemas import Candidate, JudgeResult
+from criteriabind.schemas import Candidate, Judgment, Preference
 
 
 def _normalize_text(text: str) -> str:
@@ -58,7 +58,7 @@ def _compute_overlap_score(criterion_keywords: set[str], candidate_keywords: set
     return intersection / union if union > 0 else 0.0
 
 
-def score_candidates(criterion: str, candidates: list[Candidate]) -> JudgeResult:
+def score_candidates(criterion: str, candidates: list[Candidate]) -> Judgment:
     """Score candidates deterministically based on keyword overlap with criterion.
 
     This function provides a deterministic alternative to Gemini API judging.
@@ -117,12 +117,25 @@ def score_candidates(criterion: str, candidates: list[Candidate]) -> JudgeResult
         "notes": "Mock evaluation mode. No actual safety analysis performed.",
     }
 
-    return JudgeResult(
-        winner_index=winner_index,
-        rank=rank,
-        rationales=rationales,
-        safety=safety,
-        rubric_version="mock_v1",
+    preferences = [
+        Preference(winner_idx=rank[i], loser_idx=rank[j])
+        for i in range(len(rank))
+        for j in range(i + 1, len(rank))
+    ]
+
+    return Judgment(
+        job_id="mock|job",
+        note_id="mock|note",
+        criterion_id="mock|criterion",
+        criterion_text=criterion,
+        note_text="mock note",
+        candidates=candidates,
+        best_idx=winner_index,
+        preferences=preferences,
+        rationale=rationales,
+        provider="mock",
+        model="mock_gemini",
+        meta={"safety": safety, "rank": rank},
     )
 
 

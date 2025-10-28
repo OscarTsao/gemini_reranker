@@ -5,6 +5,7 @@ from __future__ import annotations
 import time
 from collections import deque
 from collections.abc import Iterable
+from statistics import median
 
 from torch.utils.data import DataLoader, Dataset
 
@@ -17,19 +18,34 @@ class Speedometer:
         self.sample_count = 0
         self.token_count = 0
         self.step_times: deque[float] = deque(maxlen=window)
+        self.wait_times: deque[float] = deque(maxlen=window)
+        self.total_steps = 0
+        self.total_compute_time = 0.0
+        self.total_wait_time = 0.0
 
-    def update(self, batch_size: int, token_count: int, step_time: float) -> None:
+    def update(self, batch_size: int, token_count: int, step_time: float, wait_time: float = 0.0) -> None:
         self.sample_count += batch_size
         self.token_count += token_count
         self.step_times.append(step_time)
+        self.wait_times.append(wait_time)
+        self.total_steps += 1
+        self.total_compute_time += step_time
+        self.total_wait_time += wait_time
 
     def summary(self) -> dict[str, float]:
         elapsed = max(time.perf_counter() - self.start_time, 1e-6)
-        avg_step = sum(self.step_times) / len(self.step_times) if self.step_times else 0.0
+        avg_compute = self.total_compute_time / max(self.total_steps, 1e-6)
+        avg_wait = self.total_wait_time / max(self.total_steps, 1e-6)
+        wait_ratio = self.total_wait_time / max(self.total_wait_time + self.total_compute_time, 1e-6)
         return {
             "samples_per_sec": self.sample_count / elapsed,
             "tokens_per_sec": self.token_count / elapsed,
-            "avg_step_time": avg_step,
+            "steps_per_sec": self.total_steps / elapsed,
+            "avg_compute_time": avg_compute,
+            "avg_wait_time": avg_wait,
+            "median_compute_time": median(self.step_times) if self.step_times else 0.0,
+            "median_wait_time": median(self.wait_times) if self.wait_times else 0.0,
+            "dataloader_wait_ratio": wait_ratio,
         }
 
 

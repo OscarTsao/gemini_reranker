@@ -5,11 +5,11 @@ from __future__ import annotations
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Optional
 
 from omegaconf import DictConfig, OmegaConf
 from omegaconf.errors import InterpolationResolutionError
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, ValidationInfo, field_validator
 
 
 _NOW_PATTERN = re.compile(r"\${now:([^}]+)}")
@@ -42,9 +42,20 @@ def _normalize_string(value: str) -> str:
         return datetime.now(tz=timezone.utc).strftime(fmt)
 
     interpolated = _NOW_PATTERN.sub(_replace_now, value)
+    def _resolve_run_dir() -> str:
+        try:  # pragma: no cover - depends on Hydra runtime
+            from hydra.core.hydra_config import HydraConfig
+
+            return HydraConfig.get().runtime.output_dir
+        except Exception:
+            return "hydra_run"
+
+    run_dir = _resolve_run_dir()
     return (
         interpolated.replace("${hydra:job.name}", "hydra_job")
         .replace("${hydra.job.name}", "hydra_job")
+        .replace("${hydra:run.dir}", run_dir)
+        .replace("${hydra.run.dir}", run_dir)
     )
 
 
@@ -116,6 +127,8 @@ class DataConfig(BaseModel):
     truncation: bool = True
     max_length: int = Field(512, ge=8)
     bucketed_batches: bool = True
+    pairwise_filename: str = "pairs_{split}.jsonl"
+    listwise_filename: str = "listwise_{split}.jsonl"
 
     @classmethod
     @field_validator("path", "cache_dir")
@@ -148,14 +161,68 @@ class TrainConfig(BaseModel):
     early_stop_patience: int = Field(5, ge=1)
     save_top_k: int = Field(1, ge=0)
     margin: float = Field(0.0, ge=0.0)
+    benchmark_steps: int | None = Field(None, ge=1)
 
 
 class JudgeConfig(BaseModel):
     provider: Literal["mock", "gemini"] = "mock"
+    model: Optional[str] = None
     temperature: float = 0.0
-    max_tokens: int = 256
-    json_mode: bool = True
+    top_p: float = 1.0
+    max_output_tokens: int = 256
     batch_size: int = Field(32, gt=0)
+    parallelism: int = Field(1, ge=1)
+    max_retries: int = Field(3, ge=0)
+    retry_base: float = Field(1.5, gt=0.0)
+    timeout_s: int = Field(30, ge=1)
+    json_mode: bool = True
+    jobs_path: Path
+    out_path: Path
+    log_path: Path
+    api_key: Optional[str] = None
+
+
+class PairBuilderWeightConfig(BaseModel):
+    margin: bool = True
+
+
+class PairBuilderConfig(BaseModel):
+    mode: Literal["pairwise", "listwise", "both"] = "both"
+    neg_sampling: Literal["all", "topM"] = "all"
+    top_m: Optional[int] = Field(None, ge=1)
+    weight: PairBuilderWeightConfig = PairBuilderWeightConfig()
+    judgments_path: Path
+    pairwise_path: Path
+    listwise_path: Path
+    metadata_path: Path
+
+
+class CandidateGenConfig(BaseModel):
+    k: int = Field(8, ge=1, le=16)
+    min_char: Optional[int] = Field(24, ge=0)
+    max_char: Optional[int] = Field(480, ge=1)
+    jobs_path: Path
+    metrics_path: Optional[Path] = None
+
+    @classmethod
+    @field_validator("max_char")
+    def _max_char_positive(cls, value: Optional[int]) -> Optional[int]:
+        if value is not None and value <= 0:
+            raise ValueError("candidate_gen.max_char must be positive when provided")
+        return value
+
+    @classmethod
+    @field_validator("max_char")
+    def _min_leq_max(cls, value: Optional[int], info: ValidationInfo) -> Optional[int]:
+        min_char = info.data.get("min_char")
+        if (
+            value is not None
+            and isinstance(min_char, int)
+            and min_char is not None
+            and min_char > value
+        ):
+            raise ValueError("candidate_gen.min_char must be <= candidate_gen.max_char")
+        return value
 
 
 class AppConfig(BaseModel):
@@ -170,6 +237,8 @@ class AppConfig(BaseModel):
     model: ModelConfig
     train: TrainConfig
     judge: JudgeConfig
+    candidate_gen: CandidateGenConfig
+    pair_builder: PairBuilderConfig
 
     @classmethod
     @field_validator("output_dir")

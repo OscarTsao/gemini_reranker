@@ -8,7 +8,10 @@ setup:
 	$(PYTHON) -m nltk.downloader punkt
 
 env-check:
-	$(PYTHON) -c "import torch, platform; print(torch.__version__, torch.cuda.is_available(), platform.platform())"
+	@$(PYTHON) -c "import os, platform, torch; \
+print('torch', torch.__version__, 'cuda', torch.cuda.is_available(), 'platform', platform.platform()); \
+print('cudnn', torch.backends.cudnn.version() if torch.cuda.is_available() else 'n/a'); \
+print('MLFLOW_TRACKING_URI', os.environ.get('MLFLOW_TRACKING_URI', 'not set'))"
 
 fmt:
 	ruff check --fix src tests

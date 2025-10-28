@@ -8,7 +8,10 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
 from pathlib import Path
 from typing import TypeVar
 
-import ujson
+try:
+    import ujson as _json
+except ImportError:  # pragma: no cover - optional dependency
+    import json as _json
 
 from .schemas import SchemaEncoder
 
@@ -39,7 +42,7 @@ def read_jsonl(path: str | Path) -> Iterator[dict]:
             if not stripped:
                 continue
             try:
-                yield ujson.loads(stripped)
+                yield _json.loads(stripped)
             except ValueError as error:
                 raise ValueError(f"Invalid JSON at line {line_num}") from error
 
@@ -52,7 +55,7 @@ def write_jsonl(path: str | Path, rows: Iterable[dict | SchemaEncoder]) -> None:
             if isinstance(row, SchemaEncoder):
                 handle.write(f"{row.to_json()}\n")
             else:
-                handle.write(f"{ujson.dumps(row)}\n")
+                handle.write(f"{_json.dumps(row)}\n")
 
 
 def write_sharded_jsonl(

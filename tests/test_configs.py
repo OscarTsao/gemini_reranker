@@ -11,4 +11,7 @@ def test_config_composes() -> None:
     app_cfg: AppConfig = parse_config(cfg)
     assert app_cfg.mlflow.tracking_uri == "sqlite:///mlflow.db"
     assert app_cfg.project_name == "gemini_reranker"
-    assert app_cfg.model.from_pretrained_path.as_posix().endswith("baselines/dataaug_trial_0043/model/best")
+    assert app_cfg.model.from_pretrained_path is None
+    assert app_cfg.candidate_gen.k == 8
+    assert app_cfg.pair_builder.mode == "both"
+    assert app_cfg.judge.jobs_path.as_posix().endswith("demo_data/redsm5/judge_jobs.jsonl")

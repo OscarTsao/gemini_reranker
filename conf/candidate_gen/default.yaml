@@ -1,0 +1,5 @@
+k: 8
+min_char: 24
+max_char: 480
+jobs_path: ${data.path}/judge_jobs.jsonl
+metrics_path: ${hydra:run.dir}/candidate_gen_metrics.csv

@@ -1,5 +1,15 @@
 provider: mock
+model: offline-mock-v1
 temperature: 0.0
-max_tokens: 256
-json_mode: true
+top_p: 1.0
+max_output_tokens: 0
 batch_size: 32
+parallelism: 4
+max_retries: 0
+retry_base: 1.0
+timeout_s: 10
+json_mode: true
+jobs_path: ${data.path}/judge_jobs.jsonl
+out_path: ${hydra:run.dir}/judgments_mock.jsonl
+log_path: ${hydra:run.dir}/judging_metrics.csv
+api_key: null

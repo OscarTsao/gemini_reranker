@@ -46,7 +46,9 @@ def make_ranker_collate(
     def collate(batch: Sequence[dict[str, object]]) -> dict[str, object]:
         pos_features = [item["pos"] for item in batch]
         neg_features = [item["neg"] for item in batch]
+        weights = torch.tensor([float(item.get("weight", 1.0)) for item in batch], dtype=torch.float32)
         return {
+            "pair_ids": [item.get("pair_id") for item in batch],
             "group_ids": [item["group_id"] for item in batch],
             "note_ids": [item["note_id"] for item in batch],
             "criteria": [item["criterion"] for item in batch],
@@ -54,6 +56,8 @@ def make_ranker_collate(
             "neg_text": [item["neg_text"] for item in batch],
             "pos_inputs": _pad_feature_sequences(pos_features, tokenizer),
             "neg_inputs": _pad_feature_sequences(neg_features, tokenizer),
+            "weights": weights,
+            "meta": [item.get("meta", {}) for item in batch],
         }
 
     return collate

@@ -1,8 +1,8 @@
-"""Pydantic schemas used across the project."""
+"""Pydantic schemas for the reranker pipeline."""
 
 from __future__ import annotations
 
-from typing import Any, Literal, Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel, Field
 
@@ -29,61 +29,60 @@ class Sample(SchemaEncoder):
 
 
 class Candidate(SchemaEncoder):
-    """Candidate sentence/span extracted from a note."""
+    """Candidate span extracted from a note."""
 
     text: str
     start: Optional[int] = None
     end: Optional[int] = None
+    score: Optional[float] = None
     extra: dict[str, Any] = Field(default_factory=dict)
 
 
-class JudgeResult(SchemaEncoder):
-    """Result returned from Gemini judging."""
+class Preference(SchemaEncoder):
+    """Preference comparing two candidate indices."""
 
-    winner_index: int
-    rank: list[int]
-    rationales: str
-    safety: dict[str, Any]
-    rubric_version: str
-
-
-class JudgedItem(SchemaEncoder):
-    """Stored judging output for downstream training."""
-
-    id: str
-    note_id: str
-    criterion: str
-    candidates: list[Candidate]
-    judge: JudgeResult
-
-
-class PairwiseRow(SchemaEncoder):
-    """Pairwise training row with positive/negative candidates."""
-
-    id: str
-    criterion: str
-    prompt: str
-    pos: str
-    neg: str
-    source: str
-    task: Literal["criteria", "evidence"]
+    winner_idx: int
+    loser_idx: int
+    weight: float = 1.0
 
 
 class JudgingJob(SchemaEncoder):
-    """Job submitted to Gemini judge for a set of candidates."""
+    """Job submitted to a judge provider for a set of candidates."""
 
-    id: str
+    job_id: str
     note_id: str
-    criterion: str
+    criterion_id: str
+    criterion_text: str
+    note_text: str
     candidates: list[Candidate]
+    seed: Optional[int] = None
+    meta: dict[str, Any] = Field(default_factory=dict)
+
+
+class Judgment(SchemaEncoder):
+    """Judging output used downstream for dataset creation and training."""
+
+    job_id: str
+    note_id: str
+    criterion_id: str
+    criterion_text: str
+    note_text: str
+    candidates: list[Candidate]
+    best_idx: int
+    preferences: list[Preference]
+    rationale: str
+    provider: str
+    model: Optional[str] = None
+    latency_s: Optional[float] = None
+    token_usage: dict[str, Any] = Field(default_factory=dict)
+    meta: dict[str, Any] = Field(default_factory=dict)
 
 
 __all__ = [
     "Candidate",
-    "JudgeResult",
-    "JudgedItem",
     "JudgingJob",
-    "PairwiseRow",
+    "Judgment",
+    "Preference",
     "Sample",
     "SchemaEncoder",
 ]

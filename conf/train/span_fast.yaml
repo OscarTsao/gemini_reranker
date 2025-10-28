@@ -10,3 +10,4 @@ save_every_steps: 200
 metric: f1_at_iou
 early_stop_patience: 5
 save_top_k: 1
+benchmark_steps: null

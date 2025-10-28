@@ -1,0 +1,15 @@
+provider: gemini
+model: gemini-2.5-flash
+temperature: 0.0
+top_p: 1.0
+max_output_tokens: 512
+batch_size: 1
+parallelism: 1
+max_retries: 5
+retry_base: 1.6
+timeout_s: 60
+json_mode: true
+jobs_path: ${data.path}/judge_jobs.jsonl
+out_path: ${hydra:run.dir}/judgments_gemini.jsonl
+log_path: ${hydra:run.dir}/judging_metrics.csv
+api_key: ${env:GEMINI_API_KEY,null}

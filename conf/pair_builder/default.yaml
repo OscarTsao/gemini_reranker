@@ -1,0 +1,9 @@
+mode: both
+neg_sampling: all
+top_m: null
+weight:
+  margin: true
+judgments_path: ${judge.out_path}
+pairwise_path: ${hydra:run.dir}/pairs_pairwise.jsonl
+listwise_path: ${hydra:run.dir}/pairs_listwise.jsonl
+metadata_path: ${hydra:run.dir}/pairs_metadata.json

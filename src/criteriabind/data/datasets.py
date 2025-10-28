@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import logging
 from collections.abc import Iterator, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import torch
@@ -58,11 +58,14 @@ def _ensure_cache_dir(path: Path) -> None:
 
 @dataclass
 class PairRecord:
+    pair_id: str | None
     group_id: str
     note_id: str
     criterion: str
     positive: dict[str, object]
     negative: dict[str, object]
+    weight: float = 1.0
+    meta: dict[str, object] = field(default_factory=dict)
 
 
 class RankingDataset(Dataset):
@@ -88,12 +91,13 @@ class RankingDataset(Dataset):
         cache_dir = _resolve_path(Path(self.cfg.data.cache_dir))
         _ensure_cache_dir(cache_dir)
         data_dir = Path(self.cfg.data.path)
-        files = [data_dir / f"pairs_{self.split}.jsonl"]
+        pair_filename = self.cfg.data.pairwise_filename.format(split=self.split)
+        files = [data_dir / pair_filename]
         fingerprint = _fingerprint(
             files,
             self.tokenizer.name_or_path,
             self.cfg.data.max_length,
-            f"{len(self.records)}_{self.cfg.data.padding}_{self.cfg.data.truncation}",
+            f"{len(self.records)}_{self.cfg.data.padding}_{self.cfg.data.truncation}_{pair_filename}",
         )
         return cache_dir / f"ranker_{self.split}_{fingerprint}.pt"
 
@@ -126,6 +130,7 @@ class RankingDataset(Dataset):
             neg = {k: v.squeeze(0) for k, v in neg_inputs.items()}
             features.append(
                 {
+                    "pair_id": record.pair_id,
                     "group_id": record.group_id,
                     "note_id": record.note_id,
                     "criterion": record.criterion,
@@ -139,6 +144,8 @@ class RankingDataset(Dataset):
                     "neg_length": int(neg.get("attention_mask", torch.tensor([])).sum().item())
                     if "attention_mask" in neg
                     else int(neg["input_ids"].numel()),
+                    "weight": record.weight,
+                    "meta": record.meta,
                 }
             )
         torch.save(features, self.cache_path)
@@ -336,25 +343,49 @@ def build_span_datasets(cfg: AppConfig) -> DatasetBundle:
 
 def _iter_pair_records(cfg: AppConfig, split: str) -> Iterator[PairRecord]:
     data_dir = _resolve_path(Path(cfg.data.path))
-    path = data_dir / f"pairs_{split}.jsonl"
+    path = data_dir / cfg.data.pairwise_filename.format(split=split)
     if not path.exists():
         LOGGER.warning("Pair dataset split %s missing at %s", split, path)
         return
     count = 0
     for row in read_jsonl(path):
+        if "winner" in row and "loser" in row:
+            pair = PairRecord(
+                pair_id=row.get("pair_id"),
+                group_id=row.get("job_id", row.get("group_id", "")),
+                note_id=row.get("note_id", row.get("job_id", "")),
+                criterion=row.get("criterion_text", row.get("criterion", "")),
+                positive=row["winner"],
+                negative=row["loser"],
+                weight=float(row.get("weight", 1.0)),
+                meta=row.get("meta", {}),
+            )
+            yield pair
+            count += 1
+            if cfg.data.max_samples and count >= cfg.data.max_samples:
+                return
+            continue
+
+        # Backwards compatibility for legacy pair dataset structure.
         candidates = row.get("candidates", [])
         positives = [cand for cand in candidates if cand.get("label", 0) == 1]
         negatives = [cand for cand in candidates if cand.get("label", 0) == 0]
         if not positives or not negatives:
             continue
+        group_id = row.get("group_id", row.get("job_id", ""))
+        note_id = row.get("note_id", group_id)
+        criterion = row.get("criterion", row.get("criterion_text", ""))
         for pos in positives:
             for neg in negatives:
                 yield PairRecord(
-                    group_id=row["group_id"],
-                    note_id=row.get("note_id", row["group_id"]),
-                    criterion=row["criterion"],
+                    pair_id=None,
+                    group_id=group_id,
+                    note_id=note_id,
+                    criterion=criterion,
                     positive=pos,
                     negative=neg,
+                    weight=1.0,
+                    meta={},
                 )
                 count += 1
                 if cfg.data.max_samples and count >= cfg.data.max_samples:

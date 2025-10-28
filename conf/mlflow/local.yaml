@@ -1,5 +1,5 @@
 tracking_uri: sqlite:///mlflow.db
 experiment_name: gemini_reranker
-run_name: null
+run_name: ${hydra.job.name}
 artifact_root: ./mlruns
 autolog: true

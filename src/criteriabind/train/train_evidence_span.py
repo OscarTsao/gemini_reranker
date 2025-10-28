@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import itertools
+import json
 import logging
 import math
 import time
@@ -101,8 +102,24 @@ def main(cfg: DictConfig) -> None:
     set_global_seed(app_cfg.seed)
     device, amp_dtype = resolve_device(app_cfg)
     enable_speed_flags(app_cfg)
+    if device == "cuda" and torch.cuda.is_available():
+        torch.cuda.reset_peak_memory_stats()
+
+    LOGGER.info(
+        "Device: %s | AMP dtype: %s | compile=%s | grad_ckpt=%s | grad_accum=%s",
+        device,
+        amp_dtype,
+        bool(app_cfg.hardware.compile),
+        bool(app_cfg.hardware.gradient_checkpointing),
+        app_cfg.hardware.grad_accum_steps,
+    )
 
     bundle = build_span_datasets(app_cfg)
+    LOGGER.info(
+        "Span dataset — train=%d, val=%d",
+        len(bundle.train),
+        len(bundle.val),
+    )
 
     collate_fn = make_span_collate(bundle.tokenizer)
     worker_kwargs = auto_workers(app_cfg)
@@ -114,12 +131,20 @@ def main(cfg: DictConfig) -> None:
             batch_size=app_cfg.train.batch_size_per_device,
         )
     loader_kwargs = _loader_kwargs(worker_kwargs)
+    LOGGER.info(
+        "DataLoader workers=%s | pin_memory=%s | prefetch=%s | persistent=%s",
+        loader_kwargs.get("num_workers", worker_kwargs.get("num_workers")),
+        loader_kwargs.get("pin_memory"),
+        loader_kwargs.get("prefetch_factor", worker_kwargs.get("prefetch_factor")),
+        loader_kwargs.get("persistent_workers"),
+    )
 
+    drop_last = len(bundle.train) >= app_cfg.train.batch_size_per_device
     train_loader = DataLoader(
         bundle.train,
         batch_size=app_cfg.train.batch_size_per_device,
         shuffle=True,
-        drop_last=True,
+        drop_last=drop_last,
         collate_fn=collate_fn,
         **loader_kwargs,
     )
@@ -178,8 +203,10 @@ def main(cfg: DictConfig) -> None:
         train_iter = itertools.cycle(train_loader)
 
         while global_step < app_cfg.train.max_steps:
-            step_start = time.perf_counter()
+            wait_start = time.perf_counter()
             batch = next(train_iter)
+            data_time = time.perf_counter() - wait_start
+            compute_start = time.perf_counter()
             inputs = _move_to_device(batch["inputs"], device)
             start_positions = batch["start_positions"].to(device)
             end_positions = batch["end_positions"].to(device)
@@ -218,7 +245,8 @@ def main(cfg: DictConfig) -> None:
                 speedometer.update(
                     batch_size=start_positions.size(0),
                     token_count=token_count,
-                    step_time=time.perf_counter() - step_start,
+                    step_time=time.perf_counter() - compute_start,
+                    wait_time=data_time,
                 )
 
                 log_metrics(step=global_step, train_loss=pending_loss * grad_accum)
@@ -260,7 +288,26 @@ def main(cfg: DictConfig) -> None:
                     log_artifact_dir(ckpt_path, artifact_path="checkpoints/periodic")
 
         speed_metrics = speedometer.summary()
+        if device == "cuda" and torch.cuda.is_available():
+            max_memory_mb = torch.cuda.max_memory_allocated() / (1024**2)
+            speed_metrics["max_memory_mb"] = max_memory_mb
+            log_metrics(hardware_max_memory_mb=max_memory_mb)
         log_metrics(**{f"speed/{k}": v for k, v in speed_metrics.items()})
+        LOGGER.info("Speed metrics: %s", speed_metrics)
+        if app_cfg.train.benchmark_steps:
+            speed_path = output_dir / "speed.json"
+            speed_payload = {
+                "steps_completed": global_step,
+                "max_steps": app_cfg.train.max_steps,
+                "benchmark_steps": app_cfg.train.benchmark_steps,
+                "metrics": speed_metrics,
+                "device": device,
+                "amp_dtype": str(amp_dtype),
+                "compile": bool(app_cfg.hardware.compile),
+                "gradient_checkpointing": bool(app_cfg.hardware.gradient_checkpointing),
+            }
+            speed_path.write_text(json.dumps(speed_payload, indent=2), encoding="utf-8")
+            log_artifact_dir(speed_path, artifact_path="benchmarks")
         if best_checkpoint and app_cfg.train.save_top_k > 0:
             log_artifact_dir(best_checkpoint, artifact_path="checkpoints_best")
         hydra_dir = output_dir / ".hydra"

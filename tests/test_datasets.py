@@ -34,4 +34,6 @@ def test_ranker_dataset_caching(tmp_path: Path, monkeypatch) -> None:
     batch = [bundle.train[idx] for idx in sample_indices]
     collated = collate(batch)
     assert "pos_inputs" in collated and "neg_inputs" in collated
+    assert "weights" in collated
+    assert collated["weights"].shape[0] == len(batch)
     shutil.rmtree(cache_dir, ignore_errors=True)

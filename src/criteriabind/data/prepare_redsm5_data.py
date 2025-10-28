@@ -6,6 +6,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from ..candidate_generation import criterion_id
 from ..io_utils import write_jsonl
 
 
@@ -173,8 +174,6 @@ TEST_NOTES: list[NoteExample] = [
         ],
     )
 ]
-
-
 def _serialize_samples(notes: Iterable[NoteExample]) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for note in notes:
@@ -201,28 +200,50 @@ def _serialize_samples(notes: Iterable[NoteExample]) -> list[dict[str, object]]:
 def _build_pairs(notes: Iterable[NoteExample]) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for note in notes:
-        sentences = [
-            sentence.strip()
-            for sentence in note.note_text.split(". ")
-            if sentence.strip()
-        ]
         for criterion in note.criteria:
             positives = list(criterion.positives)
-            negatives = list(criterion.negatives) or [
-                sent for sent in sentences if sent not in positives
-            ]
+            # Use note sentences as negative candidates when not explicitly provided.
+            sentences = [sentence.strip() for sentence in note.note_text.split(". ") if sentence.strip()]
+            negatives = list(criterion.negatives) or [sent for sent in sentences if sent not in positives]
             if not positives or not negatives:
                 continue
-            candidate_list = [{"text": text, "label": 1} for text in positives]
-            candidate_list.extend({"text": text, "label": 0} for text in negatives[:3])
-            rows.append(
-                {
-                    "group_id": f"{note.note_id}|{criterion.text}",
-                    "note_id": note.note_id,
-                    "criterion": criterion.text,
-                    "candidates": candidate_list,
-                }
-            )
+            criterion_id_value = criterion_id(note.note_id, criterion.text)
+            job_id = f"{note.note_id}|{criterion_id_value}"
+            for pos_idx, positive_text in enumerate(positives):
+                pos_start = note.note_text.find(positive_text)
+                pos_end = pos_start + len(positive_text) if pos_start >= 0 else None
+                for neg_idx, negative_text in enumerate(negatives[:3]):
+                    neg_start = note.note_text.find(negative_text)
+                    neg_end = neg_start + len(negative_text) if neg_start >= 0 else None
+                    pair_id = f"{job_id}|{pos_idx}-{neg_idx}"
+                    rows.append(
+                        {
+                            "pair_id": pair_id,
+                            "job_id": job_id,
+                            "note_id": note.note_id,
+                            "criterion_id": criterion_id_value,
+                            "criterion_text": criterion.text,
+                            "note_text": note.note_text,
+                            "winner": {
+                                "idx": pos_idx,
+                                "text": positive_text,
+                                "start": pos_start if pos_start >= 0 else None,
+                                "end": pos_end,
+                                "score": 1.0,
+                                "extra": {"source": "demo_positive"},
+                            },
+                            "loser": {
+                                "idx": len(positives) + neg_idx,
+                                "text": negative_text,
+                                "start": neg_start if neg_start >= 0 else None,
+                                "end": neg_end,
+                                "score": 0.0,
+                                "extra": {"source": "demo_negative"},
+                            },
+                            "weight": 1.0,
+                            "meta": {"source": "demo_pairs"},
+                        }
+                    )
     return rows
 
 

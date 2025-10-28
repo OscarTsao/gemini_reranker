@@ -96,6 +96,7 @@ class CrossEncoderRanker(nn.Module):
         self,
         batch: dict[str, torch.Tensor],
         margin: float = 0.0,
+        weights: torch.Tensor | None = None,
     ) -> torch.Tensor:
         pos_scores = self.forward(batch["pos_inputs"])
         neg_scores = self.forward(batch["neg_inputs"])
@@ -103,6 +104,11 @@ class CrossEncoderRanker(nn.Module):
             losses = torch.relu(margin - (pos_scores - neg_scores))
         else:
             losses = F.softplus(-(pos_scores - neg_scores))
+        if weights is not None:
+            weights = weights.to(losses.device)
+            weighted = losses * weights
+            denom = weights.sum().clamp_min(1e-6)
+            return weighted.sum() / denom
         return losses.mean()
 
     def enable_gradient_checkpointing(self) -> None:

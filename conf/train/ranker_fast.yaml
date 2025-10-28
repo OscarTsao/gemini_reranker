@@ -11,3 +11,4 @@ metric: map@10
 early_stop_patience: 5
 save_top_k: 1
 margin: 0.0
+benchmark_steps: null
